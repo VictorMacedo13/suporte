@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p \"d:/P/suporte/.claude/skills/dgcom-clean-arch-rules\")",
+      "Bash(pnpm --version)",
+      "Bash(pnpm install *)",
+      "Bash(pnpm typecheck *)",
+      "Bash(pnpm db:generate)",
+      "Bash(pnpm --filter @dgcom/api typecheck)",
+      "Bash(pnpm --filter @dgcom/api test)",
+      "Bash(pnpm dlx *)",
+      "Bash(pnpm test *)",
+      "Bash(docker --version)",
+      "PowerShell(docker --version)",
+      "PowerShell(Test-NetConnection -ComputerName localhost -Port 5432 -InformationLevel Quiet -WarningAction SilentlyContinue)",
+      "Bash(pnpm db:migrate)",
+      "Bash(node verify.mjs)"
+    ],
+    "additionalDirectories": [
+      "d:\\P\\suporte\\.claude\\skills"
+    ]
+  }
+}

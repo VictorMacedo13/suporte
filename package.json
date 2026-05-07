@@ -1,0 +1,27 @@
+{
+  "name": "dgcom-suporte",
+  "private": true,
+  "version": "0.0.0",
+  "packageManager": "pnpm@10.0.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "db:generate": "pnpm --filter @dgcom/db generate",
+    "db:migrate": "pnpm --filter @dgcom/db migrate",
+    "db:studio": "pnpm --filter @dgcom/db studio",
+    "ui:add": "pnpm --filter @dgcom/web dlx shadcn@latest add",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\""
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "prettier": "^3.4.0",
+    "turbo": "^2.3.0",
+    "typescript": "^5.7.0"
+  }
+}

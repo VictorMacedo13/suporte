@@ -1,0 +1,73 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* === DGcom brand tokens (HSL para Tailwind) === */
+    /* Primária #1758E6 */
+    --primary: 220 80% 50%;
+    --primary-foreground: 0 0% 100%;
+    /* Accent #E6A717 */
+    --accent: 39 81% 50%;
+    --accent-foreground: 211 70% 15%;
+    /* Background #FFFFFF */
+    --background: 0 0% 100%;
+    --foreground: 211 60% 10%;
+    /* Background escuro #0A2540 (também é o ink/texto principal) */
+    --ink: 211 70% 15%;
+    --ink-soft: 211 50% 22%;
+    --ink-muted: 215 20% 33%;
+
+    /* === Tokens shadcn === */
+    --card: 0 0% 100%;
+    --card-foreground: 211 60% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 211 60% 10%;
+    --secondary: 215 25% 96%;
+    --secondary-foreground: 211 70% 15%;
+    --muted: 215 25% 96%;
+    --muted-foreground: 215 16% 45%;
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 215 28% 92%;
+    --input: 215 28% 92%;
+    --ring: 220 80% 50%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 211 70% 15%;
+    --foreground: 0 0% 98%;
+    --card: 211 60% 18%;
+    --card-foreground: 0 0% 98%;
+    --popover: 211 60% 18%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 220 80% 60%;
+    --primary-foreground: 211 70% 10%;
+    --secondary: 211 50% 22%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 211 50% 22%;
+    --muted-foreground: 215 16% 70%;
+    --accent: 39 81% 55%;
+    --accent-foreground: 211 70% 15%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 211 40% 30%;
+    --input: 211 40% 30%;
+    --ring: 220 80% 60%;
+    --ink: 0 0% 98%;
+    --ink-soft: 215 16% 80%;
+    --ink-muted: 215 16% 65%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'ss01', 'cv11';
+  }
+}
