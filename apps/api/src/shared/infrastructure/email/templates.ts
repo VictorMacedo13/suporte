@@ -47,15 +47,19 @@ export function ticketCreatedTemplate(args: { code: string; subject: string; url
   };
 }
 
-export function ticketReplyTemplate(args: { code: string; subject: string; authorName: string; preview: string; url?: string }) {
-  const linkLine = args.url
-    ? `<p style="margin:16px 0"><a href="${args.url}" style="color:#1758E6">Abrir ticket</a></p>`
-    : '';
+export function ticketReplyTemplate(args: {
+  code: string;
+  subject: string;
+  authorName: string;
+  content: string;
+  url?: string;
+}) {
+  const linkLine = args.url ? `` : '';
   const body = `
     <p style="margin:0 0 16px 0">Houve uma nova resposta no chamado <strong>${args.code}</strong> (${args.subject}).</p>
-    <blockquote style="margin:0;padding:12px 16px;background:#f4f6fa;border-left:3px solid #1758E6;border-radius:4px">
+    <blockquote style="margin:0;padding:12px 16px;background:#f4f6fa;border-left:3px solid #1758E6;border-radius:4px;white-space:pre-wrap">
       <strong style="display:block;margin-bottom:4px">${args.authorName}</strong>
-      <span style="color:#425466">${args.preview}</span>
+      <span style="color:#425466">${args.content}</span>
     </blockquote>
     ${linkLine}`;
   return {

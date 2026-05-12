@@ -3,6 +3,7 @@ import { setMagicLinkSender } from '@dgcom/auth/server';
 import { createApp } from '@/shared/http/app';
 import { ResendEmailService } from '@/shared/infrastructure/email/ResendEmailService';
 import { magicLinkTemplate } from '@/shared/infrastructure/email/templates';
+import { ensureAdminExists } from '@/scripts/createAdmin';
 
 const PORT = Number(process.env.PORT ?? 3333);
 
@@ -14,6 +15,7 @@ setMagicLinkSender(async (to, url) => {
 
 const app = createApp();
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`[api] listening on http://localhost:${PORT}`);
+  await ensureAdminExists().catch((err) => console.error('[admin] erro ao garantir admin:', err));
 });

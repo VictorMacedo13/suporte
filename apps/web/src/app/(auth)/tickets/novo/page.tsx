@@ -9,17 +9,14 @@ export default async function NovoTicketAuthPage() {
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
         <h1 className="font-display text-3xl text-ink">
-          Abrir um <span className="italic">novo ticket</span>
+          Abrir um <span>novo ticket</span>
         </h1>
         <p className="mt-1 text-sm text-ink-muted">
           Conta o que esta acontecendo. Quanto mais detalhes, mais rapido a gente resolve.
         </p>
       </div>
 
-      <AuthenticatedTicketForm
-        defaultName={session.user.name}
-        defaultEmail={session.user.email}
-      />
+      <AuthenticatedTicketForm defaultName={session.user.name} defaultEmail={session.user.email} />
     </div>
   );
 }

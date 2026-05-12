@@ -19,6 +19,8 @@ export interface TicketSummaryDTO {
   requesterName: string;
   requesterEmail: string;
   assigneeId: string | null;
+  categorySlug: string | null;
+  categoryName: string | null;
   createdAt: string;
   updatedAt: string;
 }

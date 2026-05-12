@@ -2,17 +2,10 @@ import Link from 'next/link';
 import { headers } from 'next/headers';
 import { API_BASE_URL } from '@/lib/api-client';
 import { getServerSession } from '@/lib/auth-server';
-import { TicketStatusBadge } from '@/components/features/tickets/TicketStatusBadge';
+import { TicketTableRow } from '@/components/features/tickets/TicketTableRow';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface TicketSummary {
   id: string;
@@ -23,6 +16,8 @@ interface TicketSummary {
   requesterName: string;
   requesterEmail: string;
   assigneeId: string | null;
+  categorySlug: string | null;
+  categoryName: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -46,14 +41,6 @@ async function fetchTickets(scope?: string): Promise<ListResponse | null> {
   }
 }
 
-const fmt = new Intl.DateTimeFormat('pt-BR', {
-  day: '2-digit',
-  month: '2-digit',
-  year: 'numeric',
-  hour: '2-digit',
-  minute: '2-digit',
-});
-
 export default async function DashboardPage() {
   const session = await getServerSession();
   const data = await fetchTickets();
@@ -63,7 +50,7 @@ export default async function DashboardPage() {
       <div className="flex items-end justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl text-ink">
-            Ola, <span className="italic">{session?.user.name.split(' ')[0]}</span>
+            Ola, <span>{session?.user.name.split(' ')[0]}</span>
           </h1>
           <p className="text-sm text-ink-muted">
             {session?.user.role === 'customer'
@@ -109,26 +96,17 @@ export default async function DashboardPage() {
               </TableHeader>
               <TableBody>
                 {data.tickets.map((t) => (
-                  <TableRow key={t.id} className="cursor-pointer">
-                    <TableCell className="font-mono text-xs text-ink-soft">
-                      <Link href={`/tickets/${t.code}`}>{t.code}</Link>
-                    </TableCell>
-                    <TableCell>
-                      <Link href={`/tickets/${t.code}`} className="text-ink hover:text-primary">
-                        {t.subject}
-                      </Link>
-                    </TableCell>
-                    <TableCell>
-                      <TicketStatusBadge status={t.status} />
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell">
-                      <div className="text-sm">{t.requesterName}</div>
-                      <div className="text-xs text-ink-muted">{t.requesterEmail}</div>
-                    </TableCell>
-                    <TableCell className="text-right text-xs text-ink-muted">
-                      {fmt.format(new Date(t.updatedAt))}
-                    </TableCell>
-                  </TableRow>
+                  <TicketTableRow
+                    key={t.id}
+                    code={t.code}
+                    subject={t.subject}
+                    status={t.status}
+                    requesterName={t.requesterName}
+                    requesterEmail={t.requesterEmail}
+                    updatedAt={t.updatedAt}
+                    categorySlug={t.categorySlug}
+                    categoryName={t.categoryName}
+                  />
                 ))}
               </TableBody>
             </Table>

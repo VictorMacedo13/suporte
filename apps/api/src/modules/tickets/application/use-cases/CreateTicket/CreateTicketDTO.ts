@@ -5,9 +5,12 @@ export interface CreateTicketInput {
   description: string;
   priority?: TicketPriorityValue;
   categoryId?: string | null;
+  categorySlug?: string | null;
   requesterId?: string | null;
   requesterName: string;
   requesterEmail: string;
+  clientType?: string | null;
+  documentType?: string | null;
 }
 
 export interface CreateTicketOutput {

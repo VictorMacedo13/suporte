@@ -48,7 +48,7 @@ export function Header({ user }: HeaderProps) {
       <div className="container mx-auto flex h-14 items-center justify-between px-4">
         <div className="flex items-center gap-6">
           <Link href="/dashboard" className="font-display text-lg text-ink">
-            Suporte <span className="italic text-primary">DGcom</span>
+            Suporte <span className="text-primary">DGcom</span>
           </Link>
           <nav className="hidden items-center gap-1 text-sm md:flex">
             <Button asChild variant="ghost" size="sm">
@@ -79,9 +79,7 @@ export function Header({ user }: HeaderProps) {
               <DropdownMenuLabel>
                 <div className="text-sm font-medium text-ink">{user.name}</div>
                 <div className="text-xs font-normal text-ink-muted">{user.email}</div>
-                <div className="mt-1 text-xs font-normal text-primary">
-                  {ROLE_LABEL[user.role]}
-                </div>
+                <div className="mt-1 text-xs font-normal text-primary">{ROLE_LABEL[user.role]}</div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogout}>Sair</DropdownMenuItem>

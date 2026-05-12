@@ -24,9 +24,13 @@ export interface GetTicketByCodeOutput {
   status: TicketStatusValue;
   priority: TicketPriorityValue;
   categoryId: string | null;
+  categorySlug: string | null;
+  categoryName: string | null;
   requesterId: string | null;
   requesterName: string;
   requesterEmail: string;
+  clientType: string | null;
+  documentType: string | null;
   assigneeId: string | null;
   createdAt: string;
   updatedAt: string;

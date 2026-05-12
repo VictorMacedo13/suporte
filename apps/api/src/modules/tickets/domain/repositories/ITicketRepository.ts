@@ -31,9 +31,12 @@ export interface ITicketRepository {
     description: string;
     priority?: 'low' | 'medium' | 'high' | 'urgent';
     categoryId?: string | null;
+    categorySlug?: string | null;
     requesterId?: string | null;
     requesterName: string;
     requesterEmail: string;
+    clientType?: string | null;
+    documentType?: string | null;
   }): Promise<Ticket>;
 
   save(ticket: Ticket): Promise<void>;

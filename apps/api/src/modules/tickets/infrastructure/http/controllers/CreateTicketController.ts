@@ -15,6 +15,9 @@ export class CreateTicketController {
         description: input.description,
         requesterName: input.name,
         requesterEmail: input.email,
+        clientType: input.clientType ?? null,
+        documentType: input.documentType ?? null,
+        categorySlug: input.categorySlug ?? null,
         requesterId,
       });
 

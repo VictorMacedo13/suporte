@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono, Instrument_Serif } from 'next/font/google';
+import { Geist, Geist_Mono, DM_Serif_Display } from 'next/font/google';
 import { Toaster } from '@/components/ui/sonner';
 import '@/styles/globals.css';
 
@@ -15,11 +15,11 @@ const geistMono = Geist_Mono({
   display: 'swap',
 });
 
-const instrumentSerif = Instrument_Serif({
+const dmSerifDisplay = DM_Serif_Display({
   subsets: ['latin'],
   weight: '400',
-  style: ['normal', 'italic'],
-  variable: '--font-instrument-serif',
+  style: ['normal'],
+  variable: '--font-dm-serif',
   display: 'swap',
 });
 
@@ -28,15 +28,11 @@ export const metadata: Metadata = {
   description: 'Central de atendimento DGcom',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="pt-BR"
-      className={`${geist.variable} ${geistMono.variable} ${instrumentSerif.variable}`}
+      className={`${geist.variable} ${geistMono.variable} ${dmSerifDisplay.variable}`}
     >
       <body className="font-sans">
         {children}

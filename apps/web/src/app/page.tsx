@@ -5,11 +5,9 @@ export default function HomePage() {
   return (
     <main className="container mx-auto flex min-h-dvh flex-col items-center justify-center gap-8 px-4 text-center">
       <div className="flex flex-col items-center gap-4">
-        <span className="text-xs font-semibold uppercase tracking-wider text-primary">
-          DGcom
-        </span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-primary">DGcom</span>
         <h1 className="font-display text-5xl text-ink md:text-6xl">
-          Central de <span className="italic">suporte</span>
+          Central de <span>suporte</span>
         </h1>
         <p className="max-w-prose text-base text-ink-muted">
           Abra um chamado, acompanhe o status e converse com nossa equipe sem complicacao.

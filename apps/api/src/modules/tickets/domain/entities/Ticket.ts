@@ -16,9 +16,13 @@ export interface TicketProps {
   status: TicketStatus;
   priority: TicketPriority;
   categoryId: string | null;
+  categorySlug: string | null;
+  categoryName: string | null;
   requesterId: string | null;
   requesterName: string;
   requesterEmail: string;
+  clientType: string | null;
+  documentType: string | null;
   assigneeId: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -34,6 +38,8 @@ export interface CreateTicketInput {
   requesterId?: string | null;
   requesterName: string;
   requesterEmail: string;
+  clientType?: string | null;
+  documentType?: string | null;
 }
 
 export class Ticket extends Entity<TicketProps> {
@@ -58,9 +64,13 @@ export class Ticket extends Entity<TicketProps> {
         status: TicketStatus.create('open'),
         priority: TicketPriority.create(input.priority ?? 'medium'),
         categoryId: input.categoryId ?? null,
+        categorySlug: null,
+        categoryName: null,
         requesterId: input.requesterId ?? null,
         requesterName: input.requesterName.trim(),
         requesterEmail: input.requesterEmail.trim().toLowerCase(),
+        clientType: input.clientType ?? null,
+        documentType: input.documentType ?? null,
         assigneeId: null,
         createdAt: now,
         updatedAt: now,
@@ -107,18 +117,58 @@ export class Ticket extends Entity<TicketProps> {
   }
 
   // Getters
-  get sequence() { return this.props.sequence; }
-  get code() { return this.props.code; }
-  get subject() { return this.props.subject; }
-  get description() { return this.props.description; }
-  get status() { return this.props.status; }
-  get priority() { return this.props.priority; }
-  get categoryId() { return this.props.categoryId; }
-  get requesterId() { return this.props.requesterId; }
-  get requesterName() { return this.props.requesterName; }
-  get requesterEmail() { return this.props.requesterEmail; }
-  get assigneeId() { return this.props.assigneeId; }
-  get createdAt() { return this.props.createdAt; }
-  get updatedAt() { return this.props.updatedAt; }
-  get closedAt() { return this.props.closedAt; }
+  get sequence() {
+    return this.props.sequence;
+  }
+  get code() {
+    return this.props.code;
+  }
+  get subject() {
+    return this.props.subject;
+  }
+  get description() {
+    return this.props.description;
+  }
+  get status() {
+    return this.props.status;
+  }
+  get priority() {
+    return this.props.priority;
+  }
+  get categoryId() {
+    return this.props.categoryId;
+  }
+  get categorySlug() {
+    return this.props.categorySlug;
+  }
+  get categoryName() {
+    return this.props.categoryName;
+  }
+  get requesterId() {
+    return this.props.requesterId;
+  }
+  get requesterName() {
+    return this.props.requesterName;
+  }
+  get requesterEmail() {
+    return this.props.requesterEmail;
+  }
+  get clientType() {
+    return this.props.clientType;
+  }
+  get documentType() {
+    return this.props.documentType;
+  }
+  get assigneeId() {
+    return this.props.assigneeId;
+  }
+  get createdAt() {
+    return this.props.createdAt;
+  }
+  get updatedAt() {
+    return this.props.updatedAt;
+  }
+  get closedAt() {
+    return this.props.closedAt;
+  }
 }

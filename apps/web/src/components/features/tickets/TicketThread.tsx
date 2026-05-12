@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -27,6 +27,7 @@ interface Props {
   ticketCode: string;
   initialMessages: Message[];
   currentUserId: string;
+  currentUserName: string;
   canPostInternal: boolean;
 }
 
@@ -42,11 +43,21 @@ export function TicketThread({
   ticketCode,
   initialMessages,
   currentUserId,
+  currentUserName,
   canPostInternal,
 }: Props) {
   const router = useRouter();
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [isInternal, setIsInternal] = useState(false);
+
+  // Sincroniza o estado local quando o servidor retorna novos dados (router.refresh / SSE).
+  const initialMessagesRef = useRef(initialMessages);
+  useEffect(() => {
+    if (initialMessages !== initialMessagesRef.current) {
+      initialMessagesRef.current = initialMessages;
+      setMessages(initialMessages);
+    }
+  }, [initialMessages]);
 
   const form = useForm<ReplyTicketInput>({
     resolver: zodResolver(replyTicketSchema),
@@ -65,10 +76,21 @@ export function TicketThread({
 
   async function onSubmit(values: ReplyTicketInput) {
     try {
-      await apiClient.post(`/api/tickets/${encodeURIComponent(ticketCode)}/reply`, {
-        ...values,
-        isInternal,
-      });
+      const result = await apiClient.post<{ messageId: string; ticketCode: string; createdAt: string }>(
+        `/api/tickets/${encodeURIComponent(ticketCode)}/reply`,
+        { ...values, isInternal },
+      );
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: result.messageId,
+          authorId: currentUserId,
+          authorName: currentUserName,
+          content: values.content,
+          isInternal,
+          createdAt: result.createdAt,
+        },
+      ]);
       form.reset();
       setIsInternal(false);
       toast.success('Resposta enviada');

@@ -10,7 +10,7 @@ export default function LoginPage() {
             Suporte DGcom
           </span>
           <h1 className="mt-2 font-display text-3xl text-ink">
-            Acesse sua <span className="italic">conta</span>
+            Acesse sua <span>conta</span>
           </h1>
         </div>
 

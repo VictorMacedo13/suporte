@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { apiClient, ApiError } from '@/lib/api-client';
 import { Button } from '@/components/ui/button';
@@ -33,6 +33,11 @@ export function TicketActions({ ticketCode, currentStatus }: Props) {
   const router = useRouter();
   const [next, setNext] = useState<Status>(currentStatus);
   const [loading, setLoading] = useState(false);
+
+  // Sincroniza o select quando o servidor retorna o status atualizado (router.refresh / SSE).
+  useEffect(() => {
+    setNext(currentStatus);
+  }, [currentStatus]);
 
   async function handleChangeStatus() {
     if (next === currentStatus) return;

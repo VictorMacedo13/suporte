@@ -21,6 +21,15 @@ export const ticketStatusEnum = pgEnum('ticket_status', [
 
 export const ticketPriorityEnum = pgEnum('ticket_priority', ['low', 'medium', 'high', 'urgent']);
 
+export const clientTypeEnum = pgEnum('client_type', [
+  'produtor',
+  'afiliado',
+  'comprador',
+  'agencia',
+]);
+
+export const documentTypeEnum = pgEnum('document_type', ['cpf', 'cnpj']);
+
 export const ticketCategories = pgTable('ticket_categories', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
@@ -44,6 +53,8 @@ export const tickets = pgTable(
     requesterId: text('requester_id').references(() => users.id, { onDelete: 'set null' }),
     requesterName: text('requester_name').notNull(),
     requesterEmail: text('requester_email').notNull(),
+    clientType: clientTypeEnum('client_type'),
+    documentType: documentTypeEnum('document_type'),
     assigneeId: text('assignee_id').references(() => users.id, { onDelete: 'set null' }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
@@ -90,5 +101,7 @@ export type Ticket = typeof tickets.$inferSelect;
 export type NewTicket = typeof tickets.$inferInsert;
 export type TicketStatus = (typeof ticketStatusEnum.enumValues)[number];
 export type TicketPriority = (typeof ticketPriorityEnum.enumValues)[number];
+export type ClientType = (typeof clientTypeEnum.enumValues)[number];
+export type DocumentType = (typeof documentTypeEnum.enumValues)[number];
 export type TicketMessage = typeof ticketMessages.$inferSelect;
 export type TicketCategory = typeof ticketCategories.$inferSelect;

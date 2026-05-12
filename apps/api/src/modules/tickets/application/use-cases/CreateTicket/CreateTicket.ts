@@ -4,9 +4,10 @@ import { InvalidTicketDataError } from '../../../domain/errors/TicketErrors';
 import type { ITicketRepository } from '../../../domain/repositories/ITicketRepository';
 import type { CreateTicketInput, CreateTicketOutput } from './CreateTicketDTO';
 
-export class CreateTicket
-  implements UseCase<CreateTicketInput, Promise<Either<InvalidTicketDataError, CreateTicketOutput>>>
-{
+export class CreateTicket implements UseCase<
+  CreateTicketInput,
+  Promise<Either<InvalidTicketDataError, CreateTicketOutput>>
+> {
   constructor(private readonly repo: ITicketRepository) {}
 
   async execute(
@@ -18,9 +19,12 @@ export class CreateTicket
         description: input.description,
         priority: input.priority ?? 'medium',
         categoryId: input.categoryId ?? null,
+        categorySlug: input.categorySlug ?? null,
         requesterId: input.requesterId ?? null,
         requesterName: input.requesterName,
         requesterEmail: input.requesterEmail,
+        clientType: input.clientType ?? null,
+        documentType: input.documentType ?? null,
       });
 
       await this.repo.recordStatusChange({

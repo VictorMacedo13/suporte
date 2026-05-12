@@ -1,4 +1,4 @@
-import { and, desc, eq, ilike, or, sql, type SQL } from 'drizzle-orm';
+import { and, desc, eq, ilike, ne, or, sql, type SQL } from 'drizzle-orm';
 import { schema, type DB } from '@dgcom/db';
 import { Ticket } from '../../domain/entities/Ticket';
 import { TicketMessage } from '../../domain/entities/TicketMessage';
@@ -12,7 +12,7 @@ import type {
   RecordStatusChangeInput,
 } from '../../domain/repositories/ITicketRepository';
 
-const { tickets, ticketMessages, ticketStatusHistory } = schema;
+const { tickets, ticketMessages, ticketStatusHistory, ticketCategories } = schema;
 
 export class DrizzleTicketRepository implements ITicketRepository {
   constructor(private readonly db: DB) {}
@@ -22,10 +22,22 @@ export class DrizzleTicketRepository implements ITicketRepository {
     description: string;
     priority?: 'low' | 'medium' | 'high' | 'urgent';
     categoryId?: string | null;
+    categorySlug?: string | null;
     requesterId?: string | null;
     requesterName: string;
     requesterEmail: string;
+    clientType?: string | null;
+    documentType?: string | null;
   }): Promise<Ticket> {
+    // Resolve categoryId a partir do slug, se fornecido
+    let resolvedCategoryId = input.categoryId ?? null;
+    if (!resolvedCategoryId && input.categorySlug) {
+      const cat = await this.db.query.ticketCategories.findFirst({
+        where: eq(schema.ticketCategories.slug, input.categorySlug),
+      });
+      resolvedCategoryId = cat?.id ?? null;
+    }
+
     // Insere com placeholder de code; sequence e gerado pelo Postgres.
     // Apos inserir, atualiza com code real "DG-XXXX" usando o sequence retornado.
     const [inserted] = await this.db
@@ -35,10 +47,17 @@ export class DrizzleTicketRepository implements ITicketRepository {
         subject: input.subject.trim(),
         description: input.description.trim(),
         priority: input.priority ?? 'medium',
-        categoryId: input.categoryId ?? null,
+        categoryId: resolvedCategoryId,
         requesterId: input.requesterId ?? null,
         requesterName: input.requesterName.trim(),
         requesterEmail: input.requesterEmail.trim().toLowerCase(),
+        clientType: (input.clientType ?? null) as
+          | 'produtor'
+          | 'afiliado'
+          | 'comprador'
+          | 'agencia'
+          | null,
+        documentType: (input.documentType ?? null) as 'cpf' | 'cnpj' | null,
       })
       .returning();
 
@@ -78,13 +97,29 @@ export class DrizzleTicketRepository implements ITicketRepository {
   }
 
   async findByCode(code: string): Promise<Ticket | null> {
-    const row = await this.db.query.tickets.findFirst({ where: eq(tickets.code, code) });
-    return row ? this.toEntity(row) : null;
+    const rows = await this.db
+      .select({
+        ticket: tickets,
+        categorySlug: ticketCategories.slug,
+        categoryName: ticketCategories.name,
+      })
+      .from(tickets)
+      .leftJoin(ticketCategories, eq(tickets.categoryId, ticketCategories.id))
+      .where(eq(tickets.code, code))
+      .limit(1);
+
+    const row = rows[0];
+    if (!row) return null;
+    return this.toEntity(row.ticket, row.categorySlug ?? null, row.categoryName ?? null);
   }
 
   async list(filter: ListTicketsFilter): Promise<ListTicketsResult> {
     const where: SQL[] = [];
-    if (filter.status) where.push(eq(tickets.status, filter.status));
+    if (filter.status) {
+      where.push(eq(tickets.status, filter.status));
+    } else {
+      where.push(ne(tickets.status, 'closed'));
+    }
     if (filter.requesterId) where.push(eq(tickets.requesterId, filter.requesterId));
     if (filter.assigneeId) where.push(eq(tickets.assigneeId, filter.assigneeId));
     if (filter.search) {
@@ -99,8 +134,13 @@ export class DrizzleTicketRepository implements ITicketRepository {
     const whereExpr = where.length > 0 ? and(...where) : undefined;
 
     const rows = await this.db
-      .select()
+      .select({
+        ticket: tickets,
+        categorySlug: ticketCategories.slug,
+        categoryName: ticketCategories.name,
+      })
       .from(tickets)
+      .leftJoin(ticketCategories, eq(tickets.categoryId, ticketCategories.id))
       .where(whereExpr)
       .orderBy(desc(tickets.updatedAt))
       .limit(filter.limit ?? 50)
@@ -112,7 +152,9 @@ export class DrizzleTicketRepository implements ITicketRepository {
       .where(whereExpr);
 
     return {
-      tickets: rows.map((r) => this.toEntity(r)),
+      tickets: rows.map((r) =>
+        this.toEntity(r.ticket, r.categorySlug ?? null, r.categoryName ?? null),
+      ),
       total: totalRows[0]?.count ?? 0,
     };
   }
@@ -166,7 +208,11 @@ export class DrizzleTicketRepository implements ITicketRepository {
     });
   }
 
-  private toEntity(row: typeof tickets.$inferSelect): Ticket {
+  private toEntity(
+    row: typeof tickets.$inferSelect,
+    categorySlug: string | null = null,
+    categoryName: string | null = null,
+  ): Ticket {
     return Ticket.restore(
       {
         sequence: row.sequence,
@@ -176,9 +222,13 @@ export class DrizzleTicketRepository implements ITicketRepository {
         status: TicketStatus.create(row.status),
         priority: TicketPriority.create(row.priority),
         categoryId: row.categoryId,
+        categorySlug,
+        categoryName,
         requesterId: row.requesterId,
         requesterName: row.requesterName,
         requesterEmail: row.requesterEmail,
+        clientType: row.clientType,
+        documentType: row.documentType,
         assigneeId: row.assigneeId,
         createdAt: row.createdAt,
         updatedAt: row.updatedAt,

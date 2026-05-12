@@ -12,12 +12,20 @@ export type TicketStatus = z.infer<typeof ticketStatusSchema>;
 export const ticketPrioritySchema = z.enum(['low', 'medium', 'high', 'urgent']);
 export type TicketPriority = z.infer<typeof ticketPrioritySchema>;
 
+export const clientTypeSchema = z.enum(['produtor', 'afiliado', 'comprador', 'agencia']);
+export type ClientType = z.infer<typeof clientTypeSchema>;
+
+export const documentTypeSchema = z.enum(['cpf', 'cnpj']);
+export type DocumentType = z.infer<typeof documentTypeSchema>;
+
 /**
  * Form público (sem autenticação) — espelha suporte.eduzz.com.
  */
 export const createPublicTicketSchema = z.object({
   name: z.string().trim().min(2, 'Informe seu nome'),
   email: z.email('E-mail inválido').trim(),
+  clientType: clientTypeSchema.optional(),
+  documentType: documentTypeSchema.optional(),
   subject: z.string().trim().min(3, 'Assunto muito curto').max(200),
   description: z.string().trim().min(10, 'Descreva melhor o problema'),
   categorySlug: z.string().trim().optional(),

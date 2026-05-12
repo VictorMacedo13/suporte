@@ -3,9 +3,10 @@ import type { UseCase } from '@/shared/domain/UseCase';
 import type { ITicketRepository } from '../../../domain/repositories/ITicketRepository';
 import type { ListTicketsInput, ListTicketsOutput } from './ListTicketsDTO';
 
-export class ListTickets
-  implements UseCase<ListTicketsInput, Promise<Either<never, ListTicketsOutput>>>
-{
+export class ListTickets implements UseCase<
+  ListTicketsInput,
+  Promise<Either<never, ListTicketsOutput>>
+> {
   constructor(private readonly repo: ITicketRepository) {}
 
   async execute(input: ListTicketsInput): Promise<Either<never, ListTicketsOutput>> {
@@ -29,6 +30,8 @@ export class ListTickets
         requesterName: t.requesterName,
         requesterEmail: t.requesterEmail,
         assigneeId: t.assigneeId,
+        categorySlug: t.categorySlug,
+        categoryName: t.categoryName,
         createdAt: t.createdAt.toISOString(),
         updatedAt: t.updatedAt.toISOString(),
       })),

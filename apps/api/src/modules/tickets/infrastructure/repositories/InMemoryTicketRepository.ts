@@ -59,7 +59,11 @@ export class InMemoryTicketRepository implements ITicketRepository {
 
   async list(filter: ListTicketsFilter): Promise<ListTicketsResult> {
     let filtered = [...this.tickets];
-    if (filter.status) filtered = filtered.filter((t) => t.status.value === filter.status);
+    if (filter.status) {
+      filtered = filtered.filter((t) => t.status.value === filter.status);
+    } else {
+      filtered = filtered.filter((t) => t.status.value !== 'closed');
+    }
     if (filter.requesterId) {
       filtered = filtered.filter((t) => t.requesterId === filter.requesterId);
     }

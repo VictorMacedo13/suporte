@@ -4,10 +4,10 @@ import { TicketNotFoundError } from '../../../domain/errors/TicketErrors';
 import type { ITicketRepository } from '../../../domain/repositories/ITicketRepository';
 import type { GetTicketByCodeInput, GetTicketByCodeOutput } from './GetTicketByCodeDTO';
 
-export class GetTicketByCode
-  implements
-    UseCase<GetTicketByCodeInput, Promise<Either<TicketNotFoundError, GetTicketByCodeOutput>>>
-{
+export class GetTicketByCode implements UseCase<
+  GetTicketByCodeInput,
+  Promise<Either<TicketNotFoundError, GetTicketByCodeOutput>>
+> {
   constructor(private readonly repo: ITicketRepository) {}
 
   async execute(
@@ -29,9 +29,13 @@ export class GetTicketByCode
       status: ticket.status.value,
       priority: ticket.priority.value,
       categoryId: ticket.categoryId,
+      categorySlug: ticket.categorySlug,
+      categoryName: ticket.categoryName,
       requesterId: ticket.requesterId,
       requesterName: ticket.requesterName,
       requesterEmail: ticket.requesterEmail,
+      clientType: ticket.clientType,
+      documentType: ticket.documentType,
       assigneeId: ticket.assigneeId,
       createdAt: ticket.createdAt.toISOString(),
       updatedAt: ticket.updatedAt.toISOString(),

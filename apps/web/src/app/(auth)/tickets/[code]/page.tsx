@@ -28,6 +28,11 @@ interface TicketDetailDTO {
   requesterEmail: string;
   requesterId: string | null;
   assigneeId: string | null;
+  categoryId: string | null;
+  categorySlug: string | null;
+  categoryName: string | null;
+  clientType: string | null;
+  documentType: string | null;
   createdAt: string;
   updatedAt: string;
   closedAt: string | null;
@@ -58,11 +63,14 @@ const fmt = new Intl.DateTimeFormat('pt-BR', {
   minute: '2-digit',
 });
 
-export default async function TicketDetailPage({
-  params,
-}: {
-  params: Promise<{ code: string }>;
-}) {
+const clientTypeLabel: Record<string, string> = {
+  produtor: 'Produtor',
+  afiliado: 'Afiliado',
+  comprador: 'Comprador',
+  agencia: 'Agência',
+};
+
+export default async function TicketDetailPage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;
   const [session, ticket] = await Promise.all([getServerSession(), fetchTicket(code)]);
   if (!session) return null;
@@ -84,6 +92,24 @@ export default async function TicketDetailPage({
               <strong className="font-medium text-ink-soft">Solicitante:</strong>{' '}
               {ticket.requesterName} ({ticket.requesterEmail})
             </span>
+            {ticket.categoryName && (
+              <span>
+                <strong className="font-medium text-ink-soft">Assunto:</strong>{' '}
+                {ticket.categoryName}
+              </span>
+            )}
+            {ticket.clientType && (
+              <span>
+                <strong className="font-medium text-ink-soft">Tipo de cliente:</strong>{' '}
+                {clientTypeLabel[ticket.clientType] ?? ticket.clientType}
+              </span>
+            )}
+            {ticket.documentType && (
+              <span>
+                <strong className="font-medium text-ink-soft">Documento:</strong>{' '}
+                {ticket.documentType.toUpperCase()}
+              </span>
+            )}
             <span>
               <strong className="font-medium text-ink-soft">Aberto em:</strong>{' '}
               {fmt.format(new Date(ticket.createdAt))}
@@ -104,6 +130,7 @@ export default async function TicketDetailPage({
         ticketCode={ticket.code}
         initialMessages={ticket.messages}
         currentUserId={session.user.id}
+        currentUserName={session.user.name}
         canPostInternal={canChangeStatus}
       />
 
