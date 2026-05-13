@@ -15,7 +15,7 @@ export class ListTickets implements UseCase<
       requesterId: input.requesterId,
       assigneeId: input.assigneeId,
       search: input.search,
-      limit: Math.min(input.limit ?? 50, 100),
+      limit: Math.min(input.limit ?? 20, 100),
       offset: input.offset ?? 0,
     });
 

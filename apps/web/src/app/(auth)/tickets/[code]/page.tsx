@@ -33,6 +33,8 @@ interface TicketDetailDTO {
   categoryName: string | null;
   clientType: string | null;
   documentType: string | null;
+  productId: string | null;
+  productName: string | null;
   createdAt: string;
   updatedAt: string;
   closedAt: string | null;
@@ -108,6 +110,11 @@ export default async function TicketDetailPage({ params }: { params: Promise<{ c
               <span>
                 <strong className="font-medium text-ink-soft">Documento:</strong>{' '}
                 {ticket.documentType.toUpperCase()}
+              </span>
+            )}
+            {ticket.productName && (
+              <span>
+                <strong className="font-medium text-ink-soft">Produto:</strong> {ticket.productName}
               </span>
             )}
             <span>

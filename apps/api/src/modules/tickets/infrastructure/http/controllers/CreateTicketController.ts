@@ -18,6 +18,7 @@ export class CreateTicketController {
         clientType: input.clientType ?? null,
         documentType: input.documentType ?? null,
         categorySlug: input.categorySlug ?? null,
+        productId: input.productId ?? null,
         requesterId,
       });
 

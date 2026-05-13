@@ -36,6 +36,8 @@ export class GetTicketByCode implements UseCase<
       requesterEmail: ticket.requesterEmail,
       clientType: ticket.clientType,
       documentType: ticket.documentType,
+      productId: ticket.productId,
+      productName: ticket.productName ?? null,
       assigneeId: ticket.assigneeId,
       createdAt: ticket.createdAt.toISOString(),
       updatedAt: ticket.updatedAt.toISOString(),

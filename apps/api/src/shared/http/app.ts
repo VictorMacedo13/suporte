@@ -6,6 +6,8 @@ import { authHandler } from './authHandler';
 import { sessionContext } from './middlewares/sessionContext';
 import { sseRoutes } from './routes/sseRoutes';
 import { buildTicketsModule } from '@/modules/tickets';
+import { buildProductsModule } from '@/modules/products';
+import { buildUsersModule } from '@/modules/users';
 import { sseHub } from '@/shared/infrastructure/sse/SSEHub';
 import { ResendEmailService } from '@/shared/infrastructure/email/ResendEmailService';
 import {
@@ -38,6 +40,12 @@ export function createApp() {
   const tickets = buildTicketsModule();
   app.use('/api/tickets', tickets.routes);
 
+  const products = buildProductsModule();
+  app.use('/api/products', products.routes);
+
+  const usersModule = buildUsersModule();
+  app.use('/api/users', usersModule.routes);
+
   // SSE
   app.use('/api/sse', sseRoutes);
 
@@ -50,9 +58,15 @@ export function createApp() {
   tickets.useCases.createTicket.execute = async (input) => {
     const result = await originalCreate(input);
     if (result.isRight()) {
+      const productName = input.productId
+        ? ((await products.repo.findById(input.productId))?.name ?? null)
+        : null;
       const tpl = ticketCreatedTemplate({
         code: result.value.code,
         subject: result.value.subject,
+        description: input.description,
+        requesterName: input.requesterName,
+        productName,
         url: `${webOrigin}/tickets/${result.value.code}`,
       });
       email.send({ to: input.requesterEmail, ...tpl }).catch(() => {});

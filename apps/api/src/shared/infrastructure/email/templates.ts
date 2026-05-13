@@ -32,18 +32,51 @@ export function magicLinkTemplate(url: string) {
   };
 }
 
-export function ticketCreatedTemplate(args: { code: string; subject: string; url?: string }) {
-  const linkLine = args.url
-    ? `<p style="margin:0 0 16px 0"><a href="${args.url}" style="color:#1758E6">Acompanhe o ticket</a></p>`
+export function ticketCreatedTemplate(args: {
+  code: string;
+  subject: string;
+  description: string;
+  requesterName: string;
+  productName?: string | null;
+  url?: string;
+}) {
+  const productRow = args.productName
+    ? `<tr><td style="padding:4px 0;color:#425466">Produto</td><td style="padding:4px 0 4px 16px;font-weight:500">${args.productName}</td></tr>`
     : '';
+
+  const linkBtn = args.url
+    ? `<p style="margin:24px 0 0 0"><a href="${args.url}" style="display:inline-block;background:#1758E6;color:#ffffff;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:500">Acompanhar chamado</a></p>`
+    : '';
+
   const body = `
-    <p style="margin:0 0 16px 0">Recebemos seu chamado e ja registramos com o codigo <strong>${args.code}</strong>.</p>
-    <p style="margin:0 0 16px 0"><strong>Assunto:</strong> ${args.subject}</p>
-    ${linkLine}
-    <p style="margin:0;color:#425466;font-size:13px">Em breve um atendente respondera por aqui.</p>`;
+    <p style="margin:0 0 16px 0">Ola, <strong>${args.requesterName}</strong>. Recebemos seu chamado e ja registramos com o codigo <strong>${args.code}</strong>.</p>
+    <table cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;margin-bottom:16px">
+      <tr><td style="padding:4px 0;color:#425466">Assunto</td><td style="padding:4px 0 4px 16px;font-weight:500">${args.subject}</td></tr>
+      ${productRow}
+    </table>
+    <div style="background:#f4f6fa;border-radius:8px;padding:16px;margin-bottom:16px">
+      <div style="font-size:12px;color:#425466;font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px">Descricao</div>
+      <p style="margin:0;white-space:pre-wrap;font-size:14px">${args.description}</p>
+    </div>
+    ${linkBtn}
+    <p style="margin:16px 0 0 0;color:#425466;font-size:13px">Em breve um atendente respondera por aqui.</p>`;
   return {
-    subject: `Recebemos seu chamado ${args.code}`,
+    subject: `Chamado ${args.code} recebido — ${args.subject}`,
     html: shell('Chamado recebido', body),
+  };
+}
+
+export function inviteUserTemplate(args: { name: string; url: string }) {
+  const body = `
+    <p style="margin:0 0 16px 0">Ola, <strong>${args.name}</strong>!</p>
+    <p style="margin:0 0 16px 0">Voce foi convidado para acessar o portal de suporte da DGcom. Clique no botao abaixo para criar sua senha e finalizar o cadastro:</p>
+    <p style="margin:0 0 16px 0">
+      <a href="${args.url}" style="display:inline-block;background:#1758E6;color:#ffffff;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:500">Criar minha senha</a>
+    </p>
+    <p style="margin:0;color:#425466;font-size:13px">Este link expira em 1 hora. Se voce nao esperava este convite, ignore este email.</p>`;
+  return {
+    subject: 'Convite para o Suporte DGcom — crie sua senha',
+    html: shell('Bem-vindo ao Suporte DGcom', body),
   };
 }
 

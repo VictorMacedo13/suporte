@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -51,6 +51,7 @@ const wizardSchema = z.object({
   documentType: z.enum(['cpf', 'cnpj'], {
     error: 'Selecione CPF ou CNPJ',
   }),
+  productId: z.string().uuid({ message: 'Selecione o produto' }),
   categorySlug: z.string().min(1, 'Selecione um assunto'),
   subject: z.string().trim().min(3, 'Título muito curto').max(200),
   description: z.string().trim().min(10, 'Descreva melhor o problema'),
@@ -132,8 +133,9 @@ const CATEGORIES = [
 
 const STEP_FIELDS: Record<number, (keyof WizardData)[]> = {
   1: ['name', 'email', 'clientType', 'documentType'],
-  2: ['categorySlug'],
-  3: ['subject', 'description'],
+  2: ['productId'],
+  3: ['categorySlug'],
+  4: ['subject', 'description'],
 };
 
 // ─── Step Indicator ──────────────────────────────────────────────────────────
@@ -184,6 +186,14 @@ export function AuthenticatedTicketForm({ defaultName, defaultEmail }: Props) {
   const [step, setStep] = useState(1);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [products, setProducts] = useState<Array<{ id: string; name: string }>>([]);
+
+  useEffect(() => {
+    apiClient
+      .get<{ products: Array<{ id: string; name: string }> }>('/api/products')
+      .then((data) => setProducts(data.products ?? []))
+      .catch(() => {});
+  }, []);
 
   const form = useForm<WizardData>({
     resolver: zodResolver(wizardSchema),
@@ -192,6 +202,7 @@ export function AuthenticatedTicketForm({ defaultName, defaultEmail }: Props) {
       email: defaultEmail,
       clientType: undefined,
       documentType: undefined,
+      productId: '',
       categorySlug: '',
       subject: '',
       description: '',
@@ -202,11 +213,12 @@ export function AuthenticatedTicketForm({ defaultName, defaultEmail }: Props) {
   const values = form.watch();
   const selectedCategory = CATEGORIES.find((c) => c.slug === values.categorySlug);
   const clientTypeLabel = CLIENT_TYPES.find((c) => c.value === values.clientType)?.label;
+  const selectedProduct = products.find((p) => p.id === values.productId);
 
   async function handleNext() {
     const valid = await form.trigger(STEP_FIELDS[step]);
     if (!valid) return;
-    if (step === 3) {
+    if (step === 4) {
       setConfirmOpen(true);
     } else {
       setStep((s) => s + 1);
@@ -225,6 +237,7 @@ export function AuthenticatedTicketForm({ defaultName, defaultEmail }: Props) {
         categorySlug: v.categorySlug,
         clientType: v.clientType,
         documentType: v.documentType,
+        productId: v.productId || undefined,
       });
       toast.success(`Chamado ${result.code} criado`);
       router.push(`/tickets/${result.code}`);
@@ -239,7 +252,7 @@ export function AuthenticatedTicketForm({ defaultName, defaultEmail }: Props) {
     <>
       <Card>
         <CardContent className="pt-6">
-          <StepIndicator current={step} total={3} />
+          <StepIndicator current={step} total={4} />
 
           <Form {...form}>
             {/* ── Step 1 ── */}
@@ -338,6 +351,49 @@ export function AuthenticatedTicketForm({ defaultName, defaultEmail }: Props) {
             {step === 2 && (
               <div className="space-y-5">
                 <div>
+                  <h2 className="text-lg font-semibold text-ink">Qual produto?</h2>
+                  <p className="text-sm text-ink-muted">
+                    Selecione o produto relacionado ao seu chamado.
+                  </p>
+                </div>
+                <FormField
+                  control={form.control}
+                  name="productId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Produto</FormLabel>
+                      {products.length === 0 ? (
+                        <p className="text-sm text-ink-muted">Nenhum produto disponível.</p>
+                      ) : (
+                        <div className="flex flex-col gap-3 sm:flex-row">
+                          {products.map((p) => (
+                            <button
+                              key={p.id}
+                              type="button"
+                              onClick={() => field.onChange(p.id)}
+                              className={cn(
+                                'flex-1 rounded-lg border-2 px-4 py-3 text-sm font-semibold transition-all',
+                                field.value === p.id
+                                  ? 'border-primary bg-primary/5 text-primary'
+                                  : 'border-border text-ink-muted hover:border-primary/40 hover:text-ink',
+                              )}
+                            >
+                              {p.name}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
+
+            {/* ── Step 3 ── */}
+            {step === 3 && (
+              <div className="space-y-5">
+                <div>
                   <h2 className="text-lg font-semibold text-ink">Qual o assunto?</h2>
                   <p className="text-sm text-ink-muted">
                     Selecione a categoria que melhor descreve sua solicitação.
@@ -386,8 +442,8 @@ export function AuthenticatedTicketForm({ defaultName, defaultEmail }: Props) {
               </div>
             )}
 
-            {/* ── Step 3 ── */}
-            {step === 3 && (
+            {/* ── Step 4 ── */}
+            {step === 4 && (
               <div className="space-y-5">
                 <div>
                   <h2 className="text-lg font-semibold text-ink">Detalhes do chamado</h2>
@@ -442,7 +498,7 @@ export function AuthenticatedTicketForm({ defaultName, defaultEmail }: Props) {
                 Cancelar
               </Button>
             )}
-            <Button onClick={handleNext}>{step === 3 ? 'Finalizar' : 'Continuar'}</Button>
+            <Button onClick={handleNext}>{step === 4 ? 'Finalizar' : 'Continuar'}</Button>
           </div>
         </CardContent>
       </Card>
@@ -474,6 +530,12 @@ export function AuthenticatedTicketForm({ defaultName, defaultEmail }: Props) {
                   Documento
                 </p>
                 <p className="uppercase text-ink">{values.documentType}</p>
+              </div>
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wide text-ink-muted">
+                  Produto
+                </p>
+                <p className="text-ink">{selectedProduct?.name}</p>
               </div>
             </div>
             <Separator />

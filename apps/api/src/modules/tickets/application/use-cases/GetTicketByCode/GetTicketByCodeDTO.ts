@@ -31,6 +31,8 @@ export interface GetTicketByCodeOutput {
   requesterEmail: string;
   clientType: string | null;
   documentType: string | null;
+  productId: string | null;
+  productName: string | null;
   assigneeId: string | null;
   createdAt: string;
   updatedAt: string;

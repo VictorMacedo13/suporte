@@ -25,28 +25,14 @@ export default async function AdminPage() {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <h2 className="font-display text-xl text-ink">Tickets</h2>
+            <h2 className="font-display text-xl text-ink">Produtos</h2>
             <p className="text-sm text-ink-muted">
-              Veja todos os tickets, atribua agentes e mude status.
+              Gerencie os produtos que aparecem no formulário de abertura de chamado.
             </p>
           </CardHeader>
           <CardContent>
             <Button asChild variant="outline">
-              <Link href="/dashboard">Ir para tickets</Link>
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <h2 className="font-display text-xl text-ink">Categorias</h2>
-            <p className="text-sm text-ink-muted">
-              Crie categorias para classificar e rotear chamados.
-            </p>
-          </CardHeader>
-          <CardContent>
-            <Button variant="outline" disabled>
-              Em breve
+              <Link href="/admin/produtos">Gerenciar produtos</Link>
             </Button>
           </CardContent>
         </Card>
@@ -54,14 +40,14 @@ export default async function AdminPage() {
         {session.user.role === 'admin' && (
           <Card>
             <CardHeader>
-              <h2 className="font-display text-xl text-ink">Usuarios</h2>
+              <h2 className="font-display text-xl text-ink">Usuários</h2>
               <p className="text-sm text-ink-muted">
-                Gerencie quem tem acesso e os papeis de cada um.
+                Convide novos usuários e gerencie os perfis de acesso.
               </p>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" disabled>
-                Em breve
+              <Button asChild variant="outline">
+                <Link href="/admin/usuarios">Gerenciar usuários</Link>
               </Button>
             </CardContent>
           </Card>

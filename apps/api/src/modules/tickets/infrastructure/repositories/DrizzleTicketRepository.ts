@@ -12,7 +12,7 @@ import type {
   RecordStatusChangeInput,
 } from '../../domain/repositories/ITicketRepository';
 
-const { tickets, ticketMessages, ticketStatusHistory, ticketCategories } = schema;
+const { tickets, ticketMessages, ticketStatusHistory, ticketCategories, products } = schema;
 
 export class DrizzleTicketRepository implements ITicketRepository {
   constructor(private readonly db: DB) {}
@@ -28,6 +28,7 @@ export class DrizzleTicketRepository implements ITicketRepository {
     requesterEmail: string;
     clientType?: string | null;
     documentType?: string | null;
+    productId?: string | null;
   }): Promise<Ticket> {
     // Resolve categoryId a partir do slug, se fornecido
     let resolvedCategoryId = input.categoryId ?? null;
@@ -58,6 +59,7 @@ export class DrizzleTicketRepository implements ITicketRepository {
           | 'agencia'
           | null,
         documentType: (input.documentType ?? null) as 'cpf' | 'cnpj' | null,
+        productId: input.productId ?? null,
       })
       .returning();
 
@@ -102,15 +104,22 @@ export class DrizzleTicketRepository implements ITicketRepository {
         ticket: tickets,
         categorySlug: ticketCategories.slug,
         categoryName: ticketCategories.name,
+        productName: products.name,
       })
       .from(tickets)
       .leftJoin(ticketCategories, eq(tickets.categoryId, ticketCategories.id))
+      .leftJoin(products, eq(tickets.productId, products.id))
       .where(eq(tickets.code, code))
       .limit(1);
 
     const row = rows[0];
     if (!row) return null;
-    return this.toEntity(row.ticket, row.categorySlug ?? null, row.categoryName ?? null);
+    return this.toEntity(
+      row.ticket,
+      row.categorySlug ?? null,
+      row.categoryName ?? null,
+      row.productName ?? null,
+    );
   }
 
   async list(filter: ListTicketsFilter): Promise<ListTicketsResult> {
@@ -128,6 +137,7 @@ export class DrizzleTicketRepository implements ITicketRepository {
         ilike(tickets.subject, q),
         ilike(tickets.code, q),
         ilike(tickets.requesterEmail, q),
+        ilike(tickets.requesterName, q),
       );
       if (searchExpr) where.push(searchExpr);
     }
@@ -143,7 +153,7 @@ export class DrizzleTicketRepository implements ITicketRepository {
       .leftJoin(ticketCategories, eq(tickets.categoryId, ticketCategories.id))
       .where(whereExpr)
       .orderBy(desc(tickets.updatedAt))
-      .limit(filter.limit ?? 50)
+      .limit(filter.limit ?? 20)
       .offset(filter.offset ?? 0);
 
     const totalRows = await this.db
@@ -212,6 +222,7 @@ export class DrizzleTicketRepository implements ITicketRepository {
     row: typeof tickets.$inferSelect,
     categorySlug: string | null = null,
     categoryName: string | null = null,
+    productName: string | null = null,
   ): Ticket {
     return Ticket.restore(
       {
@@ -229,6 +240,8 @@ export class DrizzleTicketRepository implements ITicketRepository {
         requesterEmail: row.requesterEmail,
         clientType: row.clientType,
         documentType: row.documentType,
+        productId: row.productId ?? null,
+        productName,
         assigneeId: row.assigneeId,
         createdAt: row.createdAt,
         updatedAt: row.updatedAt,

@@ -15,6 +15,13 @@
       "when": 1778211157490,
       "tag": "0001_narrow_reavers",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1778626867637,
+      "tag": "0002_clean_bushwacker",
+      "breakpoints": true
     }
   ]
 }

@@ -23,6 +23,8 @@ export interface TicketProps {
   requesterEmail: string;
   clientType: string | null;
   documentType: string | null;
+  productId: string | null;
+  productName: string | null;
   assigneeId: string | null;
   createdAt: Date;
   updatedAt: Date;
@@ -40,6 +42,7 @@ export interface CreateTicketInput {
   requesterEmail: string;
   clientType?: string | null;
   documentType?: string | null;
+  productId?: string | null;
 }
 
 export class Ticket extends Entity<TicketProps> {
@@ -71,6 +74,8 @@ export class Ticket extends Entity<TicketProps> {
         requesterEmail: input.requesterEmail.trim().toLowerCase(),
         clientType: input.clientType ?? null,
         documentType: input.documentType ?? null,
+        productId: input.productId ?? null,
+        productName: null,
         assigneeId: null,
         createdAt: now,
         updatedAt: now,
@@ -158,6 +163,12 @@ export class Ticket extends Entity<TicketProps> {
   }
   get documentType() {
     return this.props.documentType;
+  }
+  get productId() {
+    return this.props.productId;
+  }
+  get productName() {
+    return this.props.productName;
   }
   get assigneeId() {
     return this.props.assigneeId;

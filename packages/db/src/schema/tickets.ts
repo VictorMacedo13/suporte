@@ -30,6 +30,12 @@ export const clientTypeEnum = pgEnum('client_type', [
 
 export const documentTypeEnum = pgEnum('document_type', ['cpf', 'cnpj']);
 
+export const products = pgTable('products', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  name: text('name').notNull().unique(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+});
+
 export const ticketCategories = pgTable('ticket_categories', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
@@ -55,6 +61,7 @@ export const tickets = pgTable(
     requesterEmail: text('requester_email').notNull(),
     clientType: clientTypeEnum('client_type'),
     documentType: documentTypeEnum('document_type'),
+    productId: uuid('product_id').references(() => products.id, { onDelete: 'set null' }),
     assigneeId: text('assignee_id').references(() => users.id, { onDelete: 'set null' }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),

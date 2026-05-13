@@ -19,6 +19,14 @@ export function setMagicLinkSender(fn: (email: string, url: string) => Promise<v
   _sendMagicLink = fn;
 }
 
+let _sendPasswordReset: ((email: string, url: string, name: string) => Promise<void>) | null = null;
+
+export function setPasswordResetSender(
+  fn: (email: string, url: string, name: string) => Promise<void>,
+) {
+  _sendPasswordReset = fn;
+}
+
 export const auth = betterAuth({
   database: drizzleAdapter(getDb(), {
     provider: 'pg',
@@ -32,6 +40,13 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false,
+    sendResetPassword: async ({ user, url }) => {
+      if (!_sendPasswordReset) {
+        console.warn('[auth] password reset sender not configured');
+        return;
+      }
+      await _sendPasswordReset(user.email, url, user.name);
+    },
   },
   user: {
     additionalFields: {

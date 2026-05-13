@@ -11,6 +11,7 @@ export interface CreateTicketInput {
   requesterEmail: string;
   clientType?: string | null;
   documentType?: string | null;
+  productId?: string | null;
 }
 
 export interface CreateTicketOutput {

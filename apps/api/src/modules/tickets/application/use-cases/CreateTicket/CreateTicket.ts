@@ -25,6 +25,7 @@ export class CreateTicket implements UseCase<
         requesterEmail: input.requesterEmail,
         clientType: input.clientType ?? null,
         documentType: input.documentType ?? null,
+        productId: input.productId ?? null,
       });
 
       await this.repo.recordStatusChange({

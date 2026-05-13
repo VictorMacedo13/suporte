@@ -37,6 +37,7 @@ export interface ITicketRepository {
     requesterEmail: string;
     clientType?: string | null;
     documentType?: string | null;
+    productId?: string | null;
   }): Promise<Ticket>;
 
   save(ticket: Ticket): Promise<void>;

@@ -26,6 +26,7 @@ export const createPublicTicketSchema = z.object({
   email: z.email('E-mail inválido').trim(),
   clientType: clientTypeSchema.optional(),
   documentType: documentTypeSchema.optional(),
+  productId: z.string().uuid().optional(),
   subject: z.string().trim().min(3, 'Assunto muito curto').max(200),
   description: z.string().trim().min(10, 'Descreva melhor o problema'),
   categorySlug: z.string().trim().optional(),
